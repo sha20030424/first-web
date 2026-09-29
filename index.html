@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>梗图档案馆 · 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2313151c'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#070809;
+    --bg-soft:#0c0e13;
+    --panel:rgba(255,255,255,.035);
+    --panel-2:rgba(255,255,255,.055);
+    --line:rgba(255,255,255,.085);
+    --line-2:rgba(255,255,255,.16);
+    --text:#e9ebf2;
+    --text-2:#a2a8ba;
+    --text-3:#6f7587;
+    --accent:#b07cff;
+    --accent-2:#3ce0c0;
+    --grad:linear-gradient(115deg,#b07cff 0%,#7d8cff 45%,#3ce0c0 100%);
+    --radius:18px;
+    --header-h:72px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  /* ---------- ambient background ---------- */
+  .aura{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .aura i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+  .aura i:nth-child(1){width:620px;height:620px;left:-180px;top:-220px;background:radial-gradient(circle,#6d3bd4 0%,transparent 68%)}
+  .aura i:nth-child(2){width:560px;height:560px;right:-160px;top:8%;background:radial-gradient(circle,#12776b 0%,transparent 68%);opacity:.42}
+  .aura i:nth-child(3){width:700px;height:700px;left:22%;bottom:-380px;background:radial-gradient(circle,#2a2f6b 0%,transparent 70%);opacity:.4}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+    background:
+      radial-gradient(1200px 700px at 18% -10%,rgba(176,124,255,.10),transparent 60%),
+      radial-gradient(900px 600px at 92% 6%,rgba(60,224,192,.07),transparent 60%);
+  }
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 100% at 50% 50%,transparent 42%,rgba(0,0,0,.62) 100%)}
+
+  /* ---------- header ---------- */
+  header{
+    position:relative;z-index:5;height:var(--header-h);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 34px;border-bottom:1px solid var(--line);
+    background:rgba(7,8,9,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .mark{
+    width:34px;height:34px;border-radius:11px;background:var(--grad);
+    display:grid;place-items:center;font-size:17px;
+    box-shadow:0 6px 22px rgba(125,110,255,.35);
+  }
+  .brand h1{font-size:16px;font-weight:650;letter-spacing:.04em}
+  .brand h1 span{color:var(--text-3);font-weight:400;margin-left:8px;font-size:12.5px;letter-spacing:.08em}
+  .hmeta{display:flex;align-items:center;gap:22px;font-size:12.5px;color:var(--text-3);letter-spacing:.03em}
+  .hmeta b{color:var(--text);font-weight:600}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);display:inline-block;margin-right:7px;
+    box-shadow:0 0 0 0 rgba(60,224,192,.6);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(60,224,192,.5)}70%{box-shadow:0 0 0 9px rgba(60,224,192,0)}100%{box-shadow:0 0 0 0 rgba(60,224,192,0)}}
+
+  /* ---------- weather ---------- */
+  .hleft{display:flex;align-items:center;gap:18px;min-width:0}
+  .weather{position:relative;flex:none}
+  .wpill{
+    display:flex;align-items:center;gap:9px;cursor:pointer;font-family:inherit;
+    padding:7px 14px 7px 12px;border-radius:999px;white-space:nowrap;
+    border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);
+    transition:border-color .22s,background .22s,transform .22s;
+  }
+  .wpill:hover{border-color:var(--line-2);background:rgba(255,255,255,.085)}
+  .wpill:active{transform:scale(.98)}
+  .wpill[aria-expanded="true"]{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:rgba(176,124,255,.12)}
+  .wpill .wi{font-size:15px;line-height:1}
+  .wpill .wt{font-size:13.5px;font-weight:640;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+  .wpill .wc{font-size:12px;color:var(--text-2);max-width:6.5em;overflow:hidden;text-overflow:ellipsis}
+  .wpill.busy .wi{opacity:.35}
+  .wpill.busy .wt::after{content:"…"}
+  .wpill.err{border-color:rgba(239,68,68,.4)}
+
+  .wpanel{
+    position:absolute;left:0;top:calc(100% + 12px);width:330px;z-index:30;
+    border-radius:20px;border:1px solid var(--line-2);padding:18px;
+    background:linear-gradient(180deg,#151821,#0b0c11);
+    box-shadow:0 30px 74px rgba(0,0,0,.72);
+    opacity:0;transform:translateY(-8px) scale(.985);pointer-events:none;
+    transition:opacity .22s,transform .22s;
+  }
+  .wpanel.on{opacity:1;transform:none;pointer-events:auto}
+  .wtop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .wname{font-size:15px;font-weight:650;letter-spacing:.01em}
+  .wbadge{
+    font-size:10px;font-weight:500;letter-spacing:.06em;margin-left:7px;padding:2px 7px;border-radius:999px;
+    color:color-mix(in srgb,var(--accent-2) 80%,#fff);border:1px solid color-mix(in srgb,var(--accent-2) 34%,transparent);
+    background:color-mix(in srgb,var(--accent-2) 12%,transparent);vertical-align:1px;
+  }
+  .wsub{margin-top:5px;font-size:11.5px;color:var(--text-3);letter-spacing:.02em}
+  .wlocate{
+    flex:none;width:30px;height:30px;border-radius:10px;cursor:pointer;font-family:inherit;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text-2);
+    font-size:13px;line-height:1;display:grid;place-items:center;transition:all .2s;
+  }
+  .wlocate:hover{color:var(--text);border-color:var(--line-2);background:rgba(255,255,255,.09)}
+
+  .wmain{margin-top:16px;display:flex;align-items:center;gap:16px}
+  .wmain .we{font-size:46px;line-height:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+  .wbig{font-size:38px;font-weight:660;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .wbig em{font-style:normal;font-size:17px;font-weight:500;color:var(--text-2);margin-left:2px}
+  .wdesc{margin-top:8px;font-size:12.5px;color:var(--text-2)}
+
+  .wgrid{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .wgrid div{
+    padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.028);
+    display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  }
+  .wgrid b{font-weight:400;font-size:11.5px;color:var(--text-3)}
+  .wgrid span{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+
+  .wfc{margin-top:9px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.028);overflow:hidden}
+  .wfcrow{display:flex;align-items:center;gap:12px;padding:9px 12px;font-size:12.5px}
+  .wfcrow + .wfcrow{border-top:1px solid rgba(255,255,255,.05)}
+  .wfcrow i{font-style:normal;font-size:15px;width:18px;text-align:center}
+  .wfcrow span:nth-of-type(1){color:var(--text-2);width:3.4em;flex:none}
+  .wfcrow span:nth-of-type(2){margin-left:auto;color:var(--text-3);font-variant-numeric:tabular-nums}
+  .wfcrow span:nth-of-type(2) b{color:var(--text);font-weight:600}
+
+  .wsearch{margin-top:16px;display:flex;align-items:center;gap:9px;padding:2px 12px;border-radius:11px;
+    border:1px solid var(--line);background:rgba(255,255,255,.03);transition:border-color .2s}
+  .wsearch:focus-within{border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+  .wsearch svg{flex:none;width:14px;height:14px;stroke:var(--text-3)}
+  .wsearch input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);
+    font-size:13px;font-family:inherit;padding:9px 0}
+  .wsearch input::placeholder{color:var(--text-3)}
+  .wlist{margin-top:9px;display:flex;flex-direction:column;gap:5px;max-height:172px;overflow-y:auto}
+  .wlist::-webkit-scrollbar{width:5px}
+  .wlist::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:99px}
+  .witem{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;cursor:pointer;font-family:inherit;
+    text-align:left;padding:9px 11px;border-radius:10px;border:1px solid transparent;
+    background:rgba(255,255,255,.022);color:var(--text);font-size:13px;transition:all .18s;
+  }
+  .witem:hover{background:rgba(255,255,255,.07);border-color:var(--line)}
+  .witem em{font-style:normal;font-size:11px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wlistempty{padding:12px 4px;font-size:12.5px;color:var(--text-3);text-align:center}
+  .werr{padding:18px 4px;font-size:12.5px;color:var(--text-2);line-height:1.8;text-align:center}
+  .werr u{cursor:pointer;color:var(--accent);text-decoration:none}
+
+  /* ---------- stage ---------- */
+  .stage{position:relative;z-index:4;height:calc(100vh - var(--header-h));display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr)}
+  .wallhead{
+    display:flex;align-items:center;gap:10px;
+    font-size:11.5px;letter-spacing:.22em;color:var(--text-3);text-transform:uppercase;
+    padding:20px 0 14px;
+  }
+  .wallhead::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+  /* ---------- left wall ---------- */
+  .wall{padding:0 0 0 34px;display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--line)}
+  .marquee{
+    flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:16px;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 62px,#000 calc(100% - 78px),transparent 100%);
+    mask-image:linear-gradient(180deg,transparent 0,#000 62px,#000 calc(100% - 78px),transparent 100%);
+  }
+  .mcol{overflow:hidden;position:relative}
+  .mgroup{display:flex;flex-direction:column;gap:16px;padding-bottom:16px}
+  .mtrack{display:flex;flex-direction:column;animation:rollUp 74s linear infinite;will-change:transform}
+  .mtrack.rev{animation:rollDown 92s linear infinite}
+  .marquee:hover .mtrack{animation-play-state:paused}
+  @keyframes rollUp{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
+  @keyframes rollDown{from{transform:translate3d(0,-50%,0)}to{transform:translate3d(0,0,0)}}
+
+  .mcard{
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;
+    background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+    transition:border-color .28s,transform .28s,box-shadow .28s;
+  }
+  .mcard:hover{border-color:var(--line-2);transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.5)}
+  .poster{
+    position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden;
+    background:
+      radial-gradient(90% 120% at 22% 8%,color-mix(in srgb,var(--c1) 42%,transparent),transparent 62%),
+      radial-gradient(90% 120% at 88% 96%,color-mix(in srgb,var(--c2) 46%,transparent),transparent 60%),
+      linear-gradient(160deg,#12141b,#0a0b0f);
+  }
+  .poster::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.13) 1px,transparent 1px);
+    background-size:14px 14px;
+    -webkit-mask-image:radial-gradient(70% 70% at 50% 50%,#000,transparent);
+    mask-image:radial-gradient(70% 70% at 50% 50%,#000,transparent);
+  }
+  .poster::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.5))}
+  .pemoji{position:relative;z-index:2;font-size:54px;line-height:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,.55))}
+  .pcap{
+    position:absolute;z-index:3;left:14px;bottom:11px;right:14px;
+    font-size:12.5px;color:rgba(255,255,255,.82);letter-spacing:.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .mtitle{padding:13px 14px 4px;font-size:14.5px;font-weight:620;letter-spacing:.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 14px;gap:8px}
+  .chip{
+    font-size:11px;padding:3.5px 9px;border-radius:999px;letter-spacing:.03em;
+    border:1px solid color-mix(in srgb,var(--c1) 46%,transparent);
+    color:color-mix(in srgb,var(--c1) 72%,#fff);
+    background:color-mix(in srgb,var(--c1) 12%,transparent);
+    white-space:nowrap;
+  }
+  .heat{font-size:11.5px;color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* ---------- right panel ---------- */
+  .panel{display:flex;flex-direction:column;min-width:0;padding:0 46px 26px 46px}
+  .hero{padding:52px 0 0}
+  .hero h2{font-size:34px;line-height:1.26;font-weight:660;letter-spacing:-.015em}
+  .hero h2 em{
+    font-style:normal;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{margin-top:12px;font-size:13.5px;color:var(--text-2);line-height:1.75;max-width:44ch}
+
+  .searchbox{
+    margin-top:26px;display:flex;align-items:center;gap:12px;
+    padding:8px 8px 8px 18px;border-radius:16px;
+    border:1px solid var(--line-2);background:rgba(255,255,255,.05);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transition:border-color .25s,box-shadow .25s,background .25s;
+  }
+  .searchbox:focus-within{
+    border-color:color-mix(in srgb,var(--accent) 62%,transparent);
+    background:rgba(255,255,255,.07);
+    box-shadow:0 0 0 4px rgba(176,124,255,.12),0 14px 40px rgba(0,0,0,.4);
+  }
+  .searchbox svg{flex:none;width:17px;height:17px;stroke:var(--text-3)}
+  .searchbox input{
+    flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);
+    font-size:14.5px;font-family:inherit;padding:11px 0;
+  }
+  .searchbox input::placeholder{color:var(--text-3)}
+  .btn{
+    flex:none;border:0;cursor:pointer;font-family:inherit;
+    padding:11px 20px;border-radius:11px;font-size:13.5px;font-weight:600;letter-spacing:.03em;
+    color:#0a0b0f;background:var(--grad);
+    transition:transform .2s,filter .2s;
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .btn:active{transform:translateY(0)}
+
+  .quick{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .quick span{font-size:11.5px;color:var(--text-3);letter-spacing:.06em;margin-right:2px}
+  .qchip{
+    cursor:pointer;font-size:12px;padding:6px 13px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text-2);
+    transition:all .2s;font-family:inherit;
+  }
+  .qchip:hover{border-color:var(--line-2);color:var(--text);background:rgba(255,255,255,.07)}
+
+  .results{margin-top:28px;flex:1;min-height:0;overflow-y:auto;padding-right:8px;padding-bottom:10px}
+  .results::-webkit-scrollbar{width:6px}
+  .results::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+  .rhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  .rhead h3{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-3);font-weight:500}
+  .rhead em{font-style:normal;font-size:12px;color:var(--text-3)}
+
+  .ritem{
+    display:flex;gap:14px;align-items:flex-start;padding:13px;border-radius:15px;
+    border:1px solid transparent;cursor:pointer;transition:all .22s;margin-bottom:8px;
+  }
+  .ritem:hover{background:var(--panel);border-color:var(--line)}
+  .ritem .rank{
+    flex:none;width:20px;text-align:center;font-size:13px;font-weight:700;
+    color:var(--text-3);font-variant-numeric:tabular-nums;padding-top:29px;
+  }
+  .ritem:nth-child(2) .rank,.ritem:nth-child(3) .rank,.ritem:nth-child(4) .rank{color:var(--text)}
+  .thumb{
+    flex:none;width:62px;height:62px;border-radius:13px;display:grid;place-items:center;font-size:27px;
+    background:
+      radial-gradient(110% 110% at 25% 10%,color-mix(in srgb,var(--c1) 52%,transparent),transparent 65%),
+      radial-gradient(110% 110% at 85% 95%,color-mix(in srgb,var(--c2) 52%,transparent),transparent 62%),
+      linear-gradient(160deg,#15181f,#0b0c11);
+    border:1px solid var(--line);
+  }
+  .rmain{min-width:0;flex:1}
+  .rtop{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .rtop h4{font-size:14.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rdesc{font-size:12.5px;color:var(--text-2);line-height:1.62;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .rtags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .rtags i{
+    font-style:normal;font-size:10.5px;color:var(--text-3);border:1px solid var(--line);
+    padding:2.5px 8px;border-radius:6px;letter-spacing:.02em;
+  }
+
+  .empty{padding:52px 8px;text-align:center;color:var(--text-3);font-size:13px;line-height:2}
+  .empty b{display:block;font-size:28px;margin-bottom:14px;opacity:.5}
+  .empty u{cursor:pointer;color:var(--accent);text-decoration:none;margin:0 4px}
+
+  /* ---------- modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:40;display:none;place-items:center;padding:34px;
+    background:rgba(4,5,7,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  }
+  .modal.on{display:grid;animation:fade .26s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{
+    width:min(720px,100%);max-height:calc(100vh - 68px);overflow-y:auto;
+    border-radius:24px;border:1px solid var(--line-2);
+    background:linear-gradient(180deg,#12141b,#0a0b0f);
+    box-shadow:0 40px 100px rgba(0,0,0,.7);animation:rise .3s cubic-bezier(.2,.8,.3,1);
+  }
+  @keyframes rise{from{transform:translateY(18px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .sheet::-webkit-scrollbar{width:7px}
+  .sheet::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:99px}
+  .shead{position:relative;padding:36px 38px 30px;overflow:hidden;
+    background:
+      radial-gradient(80% 130% at 20% 0%,color-mix(in srgb,var(--c1) 40%,transparent),transparent 62%),
+      radial-gradient(80% 130% at 92% 100%,color-mix(in srgb,var(--c2) 42%,transparent),transparent 60%),
+      linear-gradient(160deg,#171a22,#0b0c11);
+  }
+  .shead::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:76px;pointer-events:none;
+    background:linear-gradient(180deg,transparent,#0e1015);
+  }
+  .shead .big{font-size:62px;line-height:1;filter:drop-shadow(0 12px 26px rgba(0,0,0,.6))}
+  .shead h2{margin-top:18px;font-size:25px;font-weight:660;letter-spacing:-.01em}
+  .sclose{
+    position:absolute;top:20px;right:22px;width:34px;height:34px;border-radius:11px;cursor:pointer;
+    border:1px solid var(--line-2);background:rgba(0,0,0,.32);color:var(--text-2);
+    font-size:17px;line-height:1;display:grid;place-items:center;font-family:inherit;transition:all .2s;
+  }
+  .sclose:hover{color:#fff;background:rgba(0,0,0,.6)}
+  .sbody{padding:26px 38px 34px}
+  .srow{margin-bottom:22px}
+  .srow:last-child{margin-bottom:0}
+  .slabel{font-size:11px;letter-spacing:.2em;color:var(--text-3);text-transform:uppercase;margin-bottom:9px}
+  .slabel em{font-style:normal;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.7;margin-left:8px;font-size:11px}
+  .srow p{font-size:13.8px;line-height:1.85;color:var(--text-2)}
+  .quote{
+    border-left:2px solid color-mix(in srgb,var(--accent) 70%,transparent);
+    padding:13px 16px;border-radius:0 12px 12px 0;background:rgba(176,124,255,.07);
+    font-size:14px;line-height:1.8;color:var(--text);
+  }
+  .vlist{display:flex;flex-wrap:wrap;gap:7px}
+  .vlist i{font-style:normal;font-size:12px;color:var(--text-2);border:1px solid var(--line);
+    padding:4px 11px;border-radius:8px;background:var(--panel)}
+  .jump{display:flex;flex-wrap:wrap;gap:8px}
+  .jump button{
+    cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--text-2);
+    border:1px solid var(--line);background:var(--panel);padding:7px 13px;border-radius:10px;transition:all .2s;
+  }
+  .jump button:hover{color:var(--text);border-color:var(--line-2);background:var(--panel-2)}
+
+  /* ---------- AI 生图 ---------- */
+  .aiblock{border-top:1px solid var(--line);padding-top:24px}
+  .aiprompt{
+    width:100%;min-height:78px;resize:vertical;font-family:inherit;font-size:13px;line-height:1.72;
+    color:var(--text);background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:12px;padding:12px 13px;outline:none;transition:border-color .2s,background .2s;
+  }
+  .aiprompt:focus{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:rgba(255,255,255,.05)}
+  .aibar{margin-top:11px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .aibtn{padding:9px 19px;font-size:13px}
+  .aibtn:disabled{opacity:.5;cursor:default;transform:none;filter:none}
+  .aistat{font-size:11.5px;color:var(--text-3);line-height:1.6}
+  .aiout:empty{display:none}
+  .aiout{margin-top:14px}
+  .aifig img{width:100%;display:block;border-radius:14px;border:1px solid var(--line);background:#0a0b0f}
+  .aifig figcaption{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-size:11.5px;color:var(--text-3)}
+  .aifig figcaption a{color:var(--accent-2);text-decoration:none;border-bottom:1px dashed color-mix(in srgb,var(--accent-2) 45%,transparent)}
+  .aiskel{height:190px;border-radius:14px;border:1px solid var(--line);position:relative;overflow:hidden;background:rgba(255,255,255,.02)}
+  .aiskel span{position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent 22%,rgba(255,255,255,.075) 50%,transparent 78%);
+    animation:swim 1.3s linear infinite}
+  @keyframes swim{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+  .aierr{
+    font-size:12.5px;line-height:1.75;color:#fca5a5;border-radius:12px;padding:12px 14px;
+    background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);word-break:break-word;
+  }
+
+  @media (prefers-reduced-motion:reduce){.mtrack{animation:none!important}}
+  @media (max-width:1340px){
+    .brand h1 span{display:none}
+    .hmeta span:nth-child(3){display:none}
+  }
+  @media (max-width:1080px){
+    body{overflow:auto}
+    .stage{grid-template-columns:1fr;height:auto}
+    .wall{border-right:0;padding:0 20px;order:2}
+    .marquee{height:640px}
+    .panel{order:1;padding:0 20px 20px}
+    .hero{padding-top:34px}
+    .hero h2{font-size:27px}
+    header{padding:0 20px;gap:12px}
+    .hleft{gap:12px}
+    .hmeta span{display:none}
+    .hmeta::after{content:"2026 档案";font-size:12.5px;letter-spacing:.06em;white-space:nowrap}
+    .wpill .wc{display:none}
+    .wpanel{width:min(330px,calc(100vw - 40px));left:-96px}
+  }
+  /* 窄屏：面板改为贴着视口定位，保证任何宽度都不出屏、也不撑出横向滚动 */
+  @media (max-width:640px){
+    .wpanel{
+      position:fixed;left:20px;right:20px;top:calc(var(--header-h) + 10px);
+      width:auto;transform:translateY(-8px) scale(.985);
+    }
+    .wpanel.on{transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="aura"><i></i><i></i><i></i></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<header>
+  <div class="hleft">
+    <div class="brand">
+      <div class="mark">🔥</div>
+      <h1>梗图档案馆<span>Meme Archive · 2026</span></h1>
+    </div>
+    <div class="weather" id="weatherBox">
+      <button class="wpill" id="wpill" type="button" aria-expanded="false" aria-label="实时天气">
+        <span class="wi" id="wpillIcon">📍</span>
+        <span class="wt" id="wpillTemp">--°</span>
+        <span class="wc" id="wpillCity">定位中</span>
+      </button>
+      <div class="wpanel" id="wpanel"></div>
+    </div>
+  </div>
+  <div class="hmeta">
+    <span><i class="dot"></i>持续收录中</span>
+    <span>收录 <b id="total">0</b> 条</span>
+    <span>更新至 2026.09</span>
+  </div>
+</header>
+
+<main class="stage">
+  <section class="wall">
+    <div class="wallhead">最著名的梗图 · 实时滚动</div>
+    <div class="marquee">
+      <div class="mcol"><div class="mtrack" id="colA"></div></div>
+      <div class="mcol"><div class="mtrack rev" id="colB"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="hero">
+      <h2>一句话，<em>找到你要的梗</em></h2>
+      <p>描述你的场景、情绪或人群——比如“周一不想上班”“单身被催婚”“AI 帮我干活”，从 2026 年 30 条热门梗里挑出最对味的那一个。</p>
+    </div>
+
+    <form class="searchbox" id="form" autocomplete="off">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" placeholder="输入你的需求，比如：周一不想上班 / 摸鱼神器 / 单身自嘲" />
+      <button class="btn" type="submit">搜一下</button>
+    </form>
+
+    <div class="quick">
+      <span>热门</span>
+      <button class="qchip" data-q="打工人">打工人</button>
+      <button class="qchip" data-q="AI 摸鱼">AI 摸鱼</button>
+      <button class="qchip" data-q="情绪自愈">情绪自愈</button>
+      <button class="qchip" data-q="马年限定">马年限定</button>
+      <button class="qchip" data-q="抽象">抽象万能</button>
+      <button class="qchip" data-q="单身">单身</button>
+    </div>
+
+    <div class="results" id="results"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ============================================================
+   2026 网络热梗数据（据公开盘点整理）
+   ============================================================ */
+const MEMES = [
+  {t:"正式确诊为一匹马",art:"a tired office worker with the head of a horse, sitting at an office desk with a lanyard badge, a mock medical diagnosis slip floating beside",e:"🐴",cat:"马年限定",heat:99,c1:"#f7b03d",c2:"#e0553f",
+   cap:"你不是累，你是被确诊成了一匹马",
+   tags:["确诊梗","牛马","职场","马年","自嘲","打工人"],
+   origin:"2026 马年现象级文案。由“正式确诊为烤肠”“正式确诊为安陵容”演变而来，把“牛马”意象与各种职场状态嫁接，用“确诊”的自嘲滤镜弱化工作压力。",
+   mean:"用一张“诊断书”的口吻给自己贴标签，把难以直说的疲惫包装成一个荒诞又精准的病名。",
+   ex:"周一早上八点，正式确诊为班马。",
+   vs:["班马","代马","皇阿马","收款马","马莎拉蒂","白聋马","卡急马","福尔马林","汗血宝马","私密马赛","条形马","神马","骡马","放我一马","搬马","老干马","盒马","千里马","刀马","森马"]},
+
+  {t:"养龙虾",art:"a glowing lobster-shaped robot working at a laptop with spreadsheets, while a relaxed person sips coffee on a couch behind",e:"🦞",cat:"AI 时代",heat:97,c1:"#ff7a5c",c2:"#c02a56",
+   cap:"今日龙虾已养肥，PPT AI 搞定，我先下班",
+   tags:["AI","摸鱼","提效","电子员工","打工人"],
+   origin:"指用 AI 自动化工具替代自己完成工作，相当于养“电子员工”帮忙打工，实现高效摸鱼。因 AI 办公工具 logo 形似龙虾而得名。",
+   mean:"把 AI 当宠物养——喂它需求，它替你干活，KPI 是它的，下班是你的。",
+   ex:"今日龙虾已养肥，汇报 PPT AI 搞定，我先准时下班。",
+   vs:["养龙虾","学会养龙虾，拒绝无效加班","快乐摸鱼不内耗"]},
+
+  {t:"酱板鸭",art:"a snowy mountain landscape with a lone knight and a white fox spirit, a braised duck standing where the beautiful woman should be",e:"🦆",cat:"影视二创",heat:93,c1:"#e0873c",c2:"#7a4bd0",
+   cap:"不，我是那只被你抛弃的酱板鸭！",
+   tags:["AI短剧","反套路","二创","雪山救狐狸"],
+   origin:"源自 AI 短剧《雪山救狐狸》。侠客雪山救白狐、留下酱板鸭当口粮；狐狸化身美女来报恩时却说：“不，我是那只被你抛弃的酱板鸭！”反套路到极致，全网疯狂二创。",
+   mean:"用来形容“剧本写好了，但主角不是你”的错位荒诞感。",
+   ex:"你以为我要报恩？不，我是那只被你抛弃的酱板鸭。",
+   vs:["酱板鸭报恩","雪山救狐狸","反套路二创"]},
+
+  {t:"疯狂的鸽子",art:"a chubby pigeon doing a silly wiggling dance, musical notes floating around, retro video game results screen frame",e:"🕊️",cat:"抽象万能",heat:96,c1:"#4fc3f7",c2:"#7d5cff",
+   cap:"通关也摇，失败也摇，UwU Funk",
+   tags:["游戏","洗脑","摇摆舞","UwU Funk","抽象"],
+   origin:"出自休闲小游戏《Pigeon Pop》。无论通关还是失败，结算页的鸽子都会跳一段魔性摇摆舞，配 BGM《UwU Funk》洗脑全站。",
+   mean:"2026 新晋爆火梗榜首。没有任何深层含义，纯靠画面与音乐洗脑——快乐不讲道理，抖两下就够了。",
+   ex:"（无言的摇摆）",
+   vs:["Pigeon Pop","UwU Funk","鸽子摇摆舞"]},
+
+  {t:"雪王月饼",art:"hands pressing a mooncake in a small bright kitchen, using an upside-down drink cup lid as the mold, ice cream and dark chocolate on the counter",e:"🥮",cat:"生活流",heat:92,c1:"#ff5f6d",c2:"#ffc371",
+   cap:"三分钟，一个蜜雪杯盖做出冰淇淋月饼",
+   tags:["蜜雪冰城","月饼","抄作业","爆款"],
+   origin:"博主用蜜雪冰城的杯盖当模具，融黑巧做脆壳、夹一勺冰淇淋，三分钟做出一枚“雪王冰淇淋月饼”，全网开启抄作业模式。",
+   mean:"2026 最动人的爆款逻辑：真正的流行诞生于烟火气里，而不是 PPT 里。",
+   ex:"抖音 #雪王月饼 播放量破 18.6 亿，微博热搜 TOP1。",
+   vs:["杯盖月饼","抄作业","雪王冰淇淋月饼"]},
+
+  {t:"爱你老己",art:"a person warmly hugging themselves, a steaming bowl of beef noodles glowing like a hug, soft warm light",e:"💗",cat:"情绪自愈",heat:95,c1:"#ff6fae",c2:"#a86bff",
+   cap:"加班到 8 点，必须给老己安排豪华版牛肉面",
+   tags:["谐音","自我关怀","治愈","年度关键词"],
+   origin:'谐音“爱你自己”。把“自己”当老朋友温柔对待：用日常微小行动完成自我抚慰。话题播放破 50 亿。',
+   mean:"2026 年度社交关键词——从向外求认可，转向向内求和解。",
+   ex:"今天很难，先给老己买杯奶茶。",
+   vs:["老己","爱自己","自我关怀母题"]},
+
+  {t:"我的身材很曼妙",art:"a person lounging comfortably with a phone, completely unbothered and elegant, floating shopping-app comment bubbles around them",e:"💃",cat:"抽象万能",heat:91,c1:"#c084fc",c2:"#38bdf8",
+   cap:"不知道，我的身材很曼妙",
+   tags:["摆烂","万能回复","拒绝焦虑","自嘲"],
+   origin:"起源于电商评论区的万能摆烂话术——被催婚、被问工资、被劝减肥，统一回复“不知道，我的身材很曼妙”。",
+   mean:"用幽默化解尴尬、拒绝焦虑，传递“接纳自己、快乐至上”的态度。",
+   ex:"——工资多少？——不知道，我的身材很曼妙。",
+   vs:["优雅回避","凡尔赛式自嘲","万能回复术"]},
+
+  {t:"哭哭马",art:"a chubby crying horse plush toy with big teary eyes, soft studio light, sad but adorable",e:"😭",cat:"马年限定",heat:90,c1:"#8b9dff",c2:"#c56bff",
+   cap:"马年限定丑萌玩偶，3 天订单暴涨 300%",
+   tags:["玩偶","丑萌","水逆","马年"],
+   origin:"马年丧萌自嘲的实体化：形容水逆倒霉又委屈可爱。马年限定丑萌玩偶 3 天订单暴涨 300%。",
+   mean:"哭着也能萌——把“最近真的很不顺”翻译成一只丑萌玩偶。",
+   ex:"这周被骂了三次，我就是那只哭哭马。",
+   vs:["哭哭马玩偶","丧萌","水逆马"]},
+
+  {t:"背手负鼠",art:"an opossum standing upright with its hands clasped behind its back, pretending to be calm, shoulders slumped",e:"🦝",cat:"情绪自愈",heat:88,c1:"#94a3b8",c2:"#6366f1",
+   cap:"我累了，但不会倒下",
+   tags:["表情包","强装镇定","扛不住","迭代"],
+   origin:"表情包迭代链的最新一环：卡皮巴拉 → 吗喽 → 悲伤蛙 → 背手负鼠。背着手强装镇定，实则“溜肩扛不动责任”。",
+   mean:"配文“我累了但不会倒下”，是这代青年渴望被理解的心声。",
+   ex:"（背手，站直，眼神空洞）我没事，真的。",
+   vs:["卡皮巴拉","吗喽","悲伤蛙","溜肩"]},
+
+  {t:"被确诊为 ××",art:"an oversized doctors prescription slip laid over a hamburger, an egg tart and a grilled sausage, playful medical chart style",e:"🍔",cat:"抽象万能",heat:94,c1:"#fbbf24",c2:"#f472b6",
+   cap:"汉如雨下，只为温堡",
+   tags:["确诊梗","常青树","万物皆可确诊","脑洞"],
+   origin:"常青树梗翻红。全网开启“赛博门诊”，把日常状态诊断成具体食物。",
+   mean:"万物皆可确诊，把当代人的疲惫与可爱藏进脑洞，用玩梗完成自我治愈。",
+   ex:"蛋挞：脆皮打工人｜烤肠：长期躺着偶尔翻身｜汉堡：汉如雨下只为温堡｜煎蛋：闹钟响翻面继续睡。",
+   vs:["蛋挞打工人","烤肠人","汉堡人","煎蛋人","赛博门诊"]},
+
+  {t:"命运的齿轮还没转，链子先掉了",art:"a large metal gear about to turn, with a broken bicycle chain slipping off its sprocket",e:"⚙️",cat:"抽象万能",heat:87,c1:"#64748b",c2:"#ef4444",
+   cap:"计划还没启动，先接连翻车",
+   tags:["反套路","改编梗","自嘲","翻车"],
+   origin:'反套路改编老梗“命运的齿轮开始转动”：满心期待人生转机，结果计划还没启动就接连掉链子。',
+   mean:"入选 2026 新晋爆火梗合辑，求职、投资、规划落空时高频自嘲。把“倒霉”说成“掉链子”，杀伤力就小了一半。",
+   ex:"辞了职准备创业——齿轮还没转，链子先掉了。",
+   vs:["齿轮还没转","链子掉了","自嘲缓冲垫"]},
+
+  {t:"孙红雷连夜关闭人脸支付",art:"a smartphone face-unlock scanner glowing red over a blurry unrecognizable face, a worried hand rushing to switch it off",e:"🫥",cat:"影视二创",heat:86,c1:"#f59e0b",c2:"#7c3aed",
+   cap:"看之后：他连夜关掉了人脸支付",
+   tags:["热搜","撞脸","人脸支付","二创"],
+   origin:'4 月 15 日爆火热搜梗。网友配文：“看之前：宝宝别闹，那怎么可能是你爸爸。看之后：孙红雷连夜关闭了人脸支付。”',
+   mean:"二次创作延伸出“刘华强也扛不住人脸支付风险”“颜王怕被分身刷空账户，连夜避险”。",
+   ex:"——这真是我爸吗？——孙红雷连夜关闭了人脸支付。",
+   vs:["撞脸","人脸支付风险","颜王避险"]},
+
+  {t:"单身的尽头是备战奥运",art:"a lone athlete training intensely in an empty gym at dawn, Olympic rings poster on the wall",e:"🏅",cat:"社交趋势",heat:89,c1:"#22d3ee",c2:"#2563eb",
+   cap:"高密度运动 + 极致自律 + 恋爱靠后",
+   tags:["单身","自律","自嘲","现象级"],
+   origin:"2026 年 5 月全网爆火的嘲讽式幽默梗，对当代单身青年“高密度运动 + 极致自律 + 自我提升优先于恋爱”生活状态的戏谑概括。",
+   mean:"迅速成为现象级网络文化符号——单身不是没人要，是在为国争光。",
+   ex:"他不谈恋爱，他在备战奥运。",
+   vs:["备战奥运","自律单身","恋爱靠后"]},
+
+  {t:"宫廷吐槽梗",art:"an office worker wearing an imperial robe, sitting on a throne built from office chairs, holding a laptop like a scepter",e:"🏛️",cat:"打工人",heat:85,c1:"#a16207",c2:"#b45309",
+   cap:"朕心甚慰 / 朕恕不早朝",
+   tags:["职场","古风","吐槽","打工人"],
+   origin:"2026 年持续加码的打工人吐槽形式：把“我很苦”换成“朕心甚慰”，把“不想上班”换成“朕恕不早朝”。",
+   mean:"不是新梗，却一直活着——因为它把最难说出口的事，用最不怕事的口气说了出来。",
+   ex:"今日体感不佳，朕恕不早朝。",
+   vs:["朕心甚慰","朕恕不早朝","上朝文学"]},
+
+  {t:"精神离职",art:"a body still sitting at an office desk while a translucent ghost version of the same person floats away toward the window",e:"💼",cat:"打工人",heat:84,c1:"#94a3b8",c2:"#0ea5e9",
+   cap:"人在工位，心已远",
+   tags:["职场","摆烂","摸鱼","心态"],
+   origin:"2026 打工人职场梗。形容表面上仍在上班，实则已经完成心理层面的辞职。",
+   mean:"身体留在工位，情绪已经离职——最低成本的自我保护。",
+   ex:"没辞职，但已经精神离职三个月了。",
+   vs:["安静辞职","心态离职"]},
+
+  {t:"班味",art:"a weary commuter in a wrinkled shirt at the end of the day, tired aura visible, cold fluorescent office light",e:"🫠",cat:"打工人",heat:83,c1:"#78716c",c2:"#f97316",
+   cap:"浑身透着一股上班的憔悴",
+   tags:["职场","疲惫","形容词","打工人"],
+   origin:"打工人专属疲惫感。形容一个人从气质到穿搭都透着“刚上完班”的痕迹。",
+   mean:"一种可以被闻到的状态——洗不掉、盖不住。",
+   ex:"这周末别拍我，班味太重了。",
+   vs:["班味重","去班味"]},
+
+  {t:"空降疲惫",art:"an office desk suddenly buried under a falling stack of task papers, Monday morning light through blinds",e:"📉",cat:"打工人",heat:80,c1:"#64748b",c2:"#a855f7",
+   cap:"周一突接紧急任务，瞬间崩溃无力",
+   tags:["职场","周一","崩溃","打工人"],
+   origin:"2026 职场热词。指在没有预告的情况下突然接到紧急任务，情绪瞬间崩塌的无力感。",
+   mean:"疲惫不是慢慢积累的，是空降的。",
+   ex:"周一 9:03，空降疲惫已到账。",
+   vs:["空降任务","周一崩溃"]},
+
+  {t:"沈腾鼓掌",art:"a meeting room where everyone slow-claps politely with frozen smiles and completely empty eyes",e:"👏",cat:"打工人",heat:79,c1:"#eab308",c2:"#a16207",
+   cap:"表面配合，内心敷衍",
+   tags:["职场","营业","表情管理","打工人"],
+   origin:"2026 职场梗。借沈腾的鼓掌表情，形容职场中的礼貌营业。",
+   mean:"会议桌上的社交礼仪：掌声热烈，内心平静。",
+   ex:"老板讲完，全员沈腾鼓掌。",
+   vs:["礼貌营业","职场演技"]},
+
+  {t:"人设崩塌式休假",art:"a person taking a snowy mountain vacation selfie while a sick-leave note lies abandoned on an office desk",e:"🧳",cat:"打工人",heat:78,c1:"#f472b6",c2:"#6366f1",
+   cap:"请假理由与实际行程完全不符",
+   tags:["职场","请假","反差","打工人"],
+   origin:"请假时说自己身体不适、要在家静养，实际行程是满档出游，被同事偶遇后当场人设崩塌。",
+   mean:"假期是真实的，人设是虚假的。",
+   ex:"——你不是说在家躺着吗？——（雪山定位已发送）",
+   vs:["请假文学","行程不符"]},
+
+  {t:"电子布洛芬",art:"a glowing pill capsule shaped like a video screen emitting healing light, a cozy cat curled beside it",e:"💊",cat:"情绪自愈",heat:82,c1:"#38bdf8",c2:"#8b5cf6",
+   cap:"搞笑视频和萌宠，缓解精神内耗",
+   tags:["治愈","情绪价值","解压","短视频"],
+   origin:"指能缓解精神内耗的低成本快乐来源：治愈短视频、AI 陪伴、虚拟偶像、萌宠内容等。",
+   mean:"情绪经济下，近 6 成青年愿为情绪价值买单。",
+   ex:"今天压力大，先去刷两片电子布洛芬。",
+   vs:["电子榨菜","情绪止痛药","治愈短视频"]},
+
+  {t:"情绪裸奔",art:"a person curled up with a phone at three in the morning, a flood of speech bubbles pouring out, moonlit blue room",e:"🌙",cat:"情绪自愈",heat:76,c1:"#4338ca",c2:"#a78bfa",
+   cap:"深夜真情实感发动态，睡醒就后悔",
+   tags:["深夜","后悔","社交媒体","emo"],
+   origin:"形容凌晨情绪上头，在社交平台发布大段真情实感，第二天醒来立刻删除的尴尬状态。",
+   mean:"深夜的自己是裸奔的，早上的自己是删帖的。",
+   ex:"凌晨两点的朋友圈，是我最大的黑历史。",
+   vs:["深夜发疯","睡醒后悔"]},
+
+  {t:"精准搭子",art:"two people eating hotpot together perfectly in sync, then walking away in opposite directions, a clean dividing line between them",e:"🎯",cat:"社交趋势",heat:81,c1:"#14b8a6",c2:"#6366f1",
+   cap:"特定场景结伴，结束后互不打扰",
+   tags:["社交","搭子","边界感","轻关系"],
+   origin:"2026 社交趋势词。指只在特定场景结伴（自习搭子、旅行搭子、演唱会搭子），场景结束后互不打扰的关系。",
+   mean:"精准、克制、低维护成本，反而成了最大的善意。",
+   ex:"我不需要朋友，我需要一个演唱会搭子。",
+   vs:["饭搭子","自习搭子","演唱会搭子","搭子文化"]},
+
+  {t:"节能型社交",art:"a person with a low-battery icon glowing above their head, politely closing a chat window and dimming the room lights",e:"🔌",cat:"社交趋势",heat:80,c1:"#0ea5e9",c2:"#22c55e",
+   cap:"只要 A 功能，不要 B 属性",
+   tags:["社交","低耗","边界感","去责任化"],
+   origin:"新晋社交趋势词。指“去责任化的亲密关系”——只要某个功能，不要附加的属性与义务。",
+   mean:"不是不需要人，而是不需要“需要太多精力去维护”的人。",
+   ex:"社交过载之后，大家都开始节能了。",
+   vs:["低耗社交","去责任化亲密关系"]},
+
+  {t:"别太荒谬",art:"an absurd surreal pile of everyday objects balanced impossibly, with one blank stunned face peeking out",e:"🙃",cat:"抽象万能",heat:77,c1:"#f59e0b",c2:"#ef4444",
+   cap:"吐槽一切离谱迷惑的人和事",
+   tags:["吐槽","万能","离谱","抽象"],
+   origin:"2026 抽象万能梗，用于吐槽一切离谱、迷惑、不合逻辑的人和事。",
+   mean:"比“离谱”多一层的无语——离谱已经不足以形容了。",
+   ex:"你凌晨三点问我这个？别太荒谬。",
+   vs:["离谱","迷惑行为"]},
+
+  {t:"我的刀盾",art:"a confused face surrounded by a spear and a shield, question marks and abstract motion lines, playful chaos",e:"🛡️",cat:"抽象万能",heat:75,c1:"#64748b",c2:"#22d3ee",
+   cap:"空耳表达满脸困惑，极度无语",
+   tags:["空耳","困惑","无语","抽象"],
+   origin:"空耳梗。用“我的刀盾”表达满脸困惑、极度无语的状态，靠音调与画面强行传达情绪。",
+   mean:"抽象到不需要语义，语气就是内容。",
+   ex:"——（听完整段发言）——我的刀盾。",
+   vs:["空耳","抽象发音"]},
+
+  {t:"NPC 文学",art:"a person walking an endlessly looping path like a video game NPC, repeating task exclamation marks floating above their head",e:"🎮",cat:"抽象万能",heat:79,c1:"#8b5cf6",c2:"#0ea5e9",
+   cap:"用游戏视角形容机械重复的日常",
+   tags:["游戏视角","重复","打工","文学"],
+   origin:"用游戏视角形容机械重复的日常：每天走同一条路、说同一句话、领同一份奖励。",
+   mean:"把自己当 NPC，是清醒也是和解。",
+   ex:"我的日常任务：通勤、开会、回消息，循环刷新。",
+   vs:["NPC 日常","任务刷新","复读人生"]},
+
+  {t:"手搓AI",art:"hands assembling a glowing robotic brain on a workbench, sparks and tiny circuit parts scattered around",e:"🛠️",cat:"AI 时代",heat:78,c1:"#22c55e",c2:"#0ea5e9",
+   cap:"形容能力超强，效率堪比 AI 开挂",
+   tags:["AI","夸人","效率","自制"],
+   origin:"2026 AI 科技热词。形容一个人能力强、效率高，做事效果堪比 AI 开挂；也指亲手搭建 AI 工具。",
+   mean:"当效率高到不像人类时，就是“手搓”出来的。",
+   ex:"这稿子你半小时写完了？手搓AI吧。",
+   vs:["手搓","AI 级效率"]},
+
+  {t:"人鸡交互",art:"a person talking to a smart speaker while a completely confused chicken stands right next to it, head tilted",e:"🐔",cat:"AI 时代",heat:74,c1:"#facc15",c2:"#f97316",
+   cap:"谐音“人机交互”，调侃与智能设备的日常",
+   tags:["谐音","AI","智能设备","调侃"],
+   origin:'谐音“人机交互”。调侃日常与智能设备、AI 助手沟通时鸡同鸭讲的状况。',
+   mean:"我说的是 A，它理解成 B，最后我们达成了 C。",
+   ex:"今天和语音助手的人鸡交互，双方都很疲惫。",
+   vs:["人机交互","鸡同鸭讲"]},
+
+  {t:"小字成语 / 夹角打工人",art:"a worker squeezed into a narrow geometric angle between two huge walls, arrows measuring the tight corner",e:"📐",cat:"打工人",heat:73,c1:"#a78bfa",c2:"#f472b6",
+   cap:"用最短语法单位封装复杂的职场困境",
+   tags:["语言梗","缩写","自嘲","职场"],
+   origin:"2026 语言梗工业化简写的代表：用最短的语法单位（四字成语、几何夹角）封装复杂的职场困境。",
+   mean:"旧词偏判断，新词更像标签；高压之下，正向励志叙事失效，改编成语反而更容易共情。",
+   ex:"夹角打工人：被夹在 KPI 和人情之间的那个角。",
+   vs:["职场四字成语","夹角打工人","标签化表达"]},
+
+  {t:"别试探了，有市场",art:"an empty television studio set with a nostalgic sitcom sofa and a bright glowing applause sign",e:"📺",cat:"影视二创",heat:76,c1:"#f97316",c2:"#db2777",
+   cap:"主演自发聚餐，点燃一波“爷青回”",
+   tags:["爱情公寓","合体","爷青回","国民IP"],
+   origin:"《爱情公寓》主演娄艺潇、陈赫、邓家佳、李金铭、孙艺洲私下多次聚餐合体，粉丝向剧方喊话：团综安排上、第六季启动。",
+   mean:"没有导演、没有宣发，全凭演员自发聚会就点燃“爷青回”。话题阅读量达数亿级。",
+   ex:"别试探了，有市场——团综安排上。",
+   vs:["爷青回","爱情公寓合体","团综"]},
+];
+
+/* ---------- 意图扩展：场景词 → 标签 ---------- */
+const EXPAND = {
+  "上班":["打工人"],"打工":["打工人"],"加班":["打工人","AI 时代"],"老板":["打工人"],
+  "周一":["打工人"],"同事":["打工人"],"工位":["打工人"],"请假":["打工人"],"会议":["打工人"],
+  "累":["情绪自愈","打工人"],"emo":["情绪自愈"],"焦虑":["情绪自愈"],"治愈":["情绪自愈"],
+  "内耗":["情绪自愈"],"压力":["情绪自愈"],"晚上":["情绪自愈"],"深夜":["情绪自愈"],
+  "ai":["AI 时代"],"自动化":["AI 时代"],"摸鱼":["AI 时代","打工人"],"偷懒":["AI 时代"],
+  "机器人":["AI 时代"],"效率":["AI 时代"],
+  "单身":["社交趋势"],"恋爱":["社交趋势"],"相亲":["社交趋势"],"催婚":["社交趋势","抽象万能"],
+  "朋友":["社交趋势"],"社交":["社交趋势"],
+  "马":["马年限定"],"马年":["马年限定"],"本命年":["马年限定"],
+  "无语":["抽象万能"],"离谱":["抽象万能"],"吐槽":["抽象万能"],"离谱迷惑":["抽象万能"],
+  "搞笑":["抽象万能","情绪自愈"],"沙雕":["抽象万能"],"抽象":["抽象万能"],
+  "剧":["影视二创"],"短剧":["影视二创"],"电视":["影视二创"],
+  "吃的":["生活流"],"美食":["生活流"],"月饼":["生活流"],
+  "不想上班":["打工人"],"早八":["打工人"],"通勤":["打工人"],"上班族":["打工人"],
+  "牛马":["打工人","马年限定"],"打工人":["打工人"],"职场":["打工人"],
+  "自我关怀":["情绪自愈"],"爱自己":["情绪自愈"],"摆烂":["抽象万能","打工人"],
+  "摸鱼神器":["AI 时代"],"办公":["AI 时代"],"智能":["AI 时代"],
+  "马年快乐":["马年限定"],"表情包":["情绪自愈","抽象万能"]
+};
+
+/* ---------- 工具 ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const heatLabel = h => h >= 90 ? "全网刷屏" : h >= 84 ? "持续高热" : h >= 78 ? "稳定流行" : "圈层热梗";
+
+/* ============================================================
+   左墙：双列无缝滚动
+   ============================================================ */
+function cardHTML(m, i){
+  return `<article class="mcard" data-i="${i}" style="--c1:${m.c1};--c2:${m.c2}">
+    <div class="poster">
+      <div class="pemoji">${m.e}</div>
+      <div class="pcap">${esc(m.cap)}</div>
+    </div>
+    <div class="mtitle">${esc(m.t)}</div>
+    <div class="mrow">
+      <span class="chip">${esc(m.cat)}</span>
+      <span class="heat">🔥 ${m.heat}</span>
+    </div>
+  </article>`;
+}
+function buildWall(){
+  const idx = MEMES.map((m,i)=>i).sort((a,b)=>MEMES[b].heat-MEMES[a].heat);
+  const A = idx.filter((_,i)=>i%2===0), B = idx.filter((_,i)=>i%2===1);
+  const fill = (arr, el) => {
+    const one = arr.map(i=>cardHTML(MEMES[i],i)).join("");
+    el.innerHTML = `<div class="mgroup">${one}</div><div class="mgroup">${one}</div>`;
+  };
+  fill(A, $("#colA"));
+  fill(B, $("#colB"));
+  $("#total").textContent = MEMES.length;
+}
+buildWall();
+
+/* ============================================================
+   搜索
+   ============================================================ */
+/* 中文没有词边界：长句按 2~3 字滑窗切分，再做场景词扩展 */
+function tokenize(raw){
+  const base = raw.toLowerCase().split(/[\s,，、/|.。!！?？~]+/).filter(Boolean);
+  const toks = new Set(base);
+  base.forEach(t=>{
+    if(/[\u4e00-\u9fa5]/.test(t) && t.length > 2){
+      for(let n=2;n<=3;n++) for(let i=0;i+n<=t.length;i++) toks.add(t.slice(i,i+n));
+    }
+  });
+  return [...toks];
+}
+function expandIntent(raw){
+  const set = new Set(), ql = raw.toLowerCase();
+  Object.keys(EXPAND).forEach(k=>{ if(ql.includes(k)) EXPAND[k].forEach(t=>set.add(t)); });
+  return set;
+}
+function search(raw){
+  const q = raw.trim().toLowerCase();
+  if(!q) return null;
+  const words = raw.toLowerCase().split(/[\s,，、/|.。!！?？~]+/).filter(Boolean);
+  const grams = tokenize(raw).filter(t => !words.includes(t));
+  const extra = expandIntent(raw);
+
+  return MEMES.map((m,i)=>{
+    let score = 0; const hits = new Set();
+    const hay = {
+      t:m.t.toLowerCase(), cat:m.cat.toLowerCase(),
+      mean:m.mean.toLowerCase(), origin:m.origin.toLowerCase(),
+      ex:m.ex.toLowerCase(), cap:m.cap.toLowerCase(),
+      tags:m.tags.join(" ").toLowerCase(), vs:m.vs.join(" ").toLowerCase()
+    };
+    // 整句命中，权重最高
+    if(q.length > 1){
+      if(hay.t.includes(q)){ score += 42; hits.add("标题"); }
+      if(hay.tags.includes(q) || hay.cap.includes(q)){ score += 24; hits.add("语义"); }
+    }
+    // 完整词
+    words.forEach(t=>{
+      let w = 0;
+      if(hay.t.includes(t)) w = Math.max(w, 13);
+      if(hay.tags.includes(t)) w = Math.max(w, 8);
+      if(hay.cat.includes(t)) w = Math.max(w, 7);
+      if(hay.vs.includes(t)) w = Math.max(w, 5);
+      if(hay.cap.includes(t)) w = Math.max(w, 4);
+      if(hay.mean.includes(t) || hay.origin.includes(t)) w = Math.max(w, 3);
+      if(hay.ex.includes(t)) w = Math.max(w, 2);
+      score += w;
+      if(w >= 7) hits.add("关键词");
+    });
+    // 长句滑窗片段：只做轻量加权，避免"完全不会命中的话"这类句子乱命中
+    grams.forEach(t=>{
+      if(hay.t.includes(t) || hay.tags.includes(t) || hay.cat.includes(t)){ score += 2; hits.add("关键词"); }
+      else if(hay.vs.includes(t) || hay.cap.includes(t) || hay.mean.includes(t) || hay.origin.includes(t)) score += 1;
+    });
+    // 场景意图扩展
+    extra.forEach(tag=>{
+      if(m.tags.includes(tag) || m.cat === tag){ score += 11; hits.add("场景"); }
+    });
+    return { m, i, raw: score, score: Math.round(score + m.heat * 0.15), hits:[...hits] };
+  }).filter(r => r.raw >= 8).sort((a,b)=>b.score-a.score || b.m.heat-a.m.heat);
+}
+
+function renderHot(){
+  const list = MEMES.map((m,i)=>({m,i})).sort((a,b)=>b.m.heat-a.m.heat).slice(0,8);
+  $("#results").innerHTML = `<div class="rhead"><h3>热搜榜 · TOP 8</h3><em>共 ${MEMES.length} 条收录</em></div>` +
+    list.map((r,n)=>itemHTML(r.m, r.i, n+1, null)).join("");
+}
+function renderResults(rs, q){
+  const box = $("#results");
+  if(!rs.length){
+    box.innerHTML = `<div class="empty"><b>🕳️</b>
+      没找到贴合的梗。<br>换个说法试试，或者直接逛榜单：<br>
+      <u data-q="打工人">打工人</u><u data-q="情绪自愈">情绪自愈</u><u data-q="AI 摸鱼">AI 摸鱼</u><u data-q="抽象">抽象</u>
+      </div>`;
+    return;
+  }
+  box.innerHTML = `<div class="rhead"><h3>匹配结果</h3><em>「${esc(q)}」命中 ${rs.length} 条</em></div>` +
+    rs.map((r,n)=>itemHTML(r.m, r.i, n+1, r.hits)).join("");
+}
+function itemHTML(m, i, rank, hits){
+  const tags = (hits && hits.length)
+    ? hits.map(h=>`<i>命中${h}</i>`).concat([`<i>${esc(m.cat)}</i>`,`<i>🔥 ${m.heat} · ${heatLabel(m.heat)}</i>`])
+    : [`<i>${esc(m.cat)}</i>`,`<i>🔥 ${m.heat} · ${heatLabel(m.heat)}</i>`];
+  return `<div class="ritem" data-i="${i}">
+    <div class="rank">${rank}</div>
+    <div class="thumb" style="--c1:${m.c1};--c2:${m.c2}">${m.e}</div>
+    <div class="rmain">
+      <div class="rtop"><h4>${esc(m.t)}</h4></div>
+      <div class="rdesc">${esc(m.mean)}</div>
+      <div class="rtags">${tags.join("")}</div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   详情弹窗
+   ============================================================ */
+function openDetail(i){
+  const m = MEMES[i];
+  const related = MEMES.map((x,j)=>({x,j})).filter(o=>o.j!==i && o.x.cat===m.cat)
+                        .sort((a,b)=>b.x.heat-a.x.heat).slice(0,4);
+  $("#sheet").style.setProperty("--c1", m.c1);
+  $("#sheet").style.setProperty("--c2", m.c2);
+  $("#sheet").innerHTML = `
+    <div class="shead">
+      <button class="sclose" aria-label="关闭">✕</button>
+      <div class="big">${m.e}</div>
+      <h2>${esc(m.t)}</h2>
+    </div>
+    <div class="sbody">
+      <div class="srow"><div class="slabel">Classification</div>
+        <div class="vlist"><i>${esc(m.cat)}</i><i>🔥 热度 ${m.heat}</i><i>${heatLabel(m.heat)}</i>${m.tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>
+      </div>
+      <div class="srow"><div class="slabel">What it means</div><p>${esc(m.mean)}</p></div>
+      <div class="srow"><div class="slabel">Origin</div><p>${esc(m.origin)}</p></div>
+      <div class="srow"><div class="slabel">How to use</div><div class="quote">${esc(m.ex)}</div></div>
+      <div class="srow"><div class="slabel">Variants</div><div class="vlist">${m.vs.map(v=>`<i>${esc(v)}</i>`).join("")}</div></div>
+      ${related.length ? `<div class="srow"><div class="slabel">More in ${esc(m.cat)}</div>
+        <div class="jump">${related.map(r=>`<button data-i="${r.j}">${r.x.e} ${esc(r.x.t)}</button>`).join("")}</div></div>` : ""}
+      <div class="srow aiblock">
+        <div class="slabel">AI Illustration · ${AI.ready ? esc(AI.model) : "未启用"} <em>提示词用英文效果更好，可自行修改</em></div>
+        <textarea class="aiprompt" id="aiPrompt" spellcheck="false" placeholder="描述你想要的画面，然后点生成…">${esc(aiPromptFor(m))}</textarea>
+        <div class="aibar">
+          <button class="btn aibtn" id="aiGo" type="button">生成插画</button>
+          <span class="aistat" id="aiStat">${esc(aiHint())}</span>
+        </div>
+        <div class="aiout" id="aiOut"></div>
+      </div>
+    </div>`;
+  $("#modal").classList.add("on");
+  document.body.style.overflow = "hidden";
+  $("#aiGo").addEventListener("click", () => aiGenerate(i));
+  if(AI.cache[i]) aiRenderSaved(i);
+}
+function closeDetail(){
+  $("#modal").classList.remove("on");
+  if(window.innerWidth > 1080) document.body.style.overflow = "hidden";
+}
+
+/* ============================================================
+   事件绑定
+   ============================================================ */
+document.addEventListener("click", e=>{
+  const card = e.target.closest(".mcard,.ritem");
+  if(card){ openDetail(+card.dataset.i); return; }
+  const jb = e.target.closest(".jump button");
+  if(jb){ openDetail(+jb.dataset.i); return; }
+  const qc = e.target.closest(".qchip, .empty u");
+  if(qc){ doSearch(qc.dataset.q); return; }
+  if(e.target.closest(".sclose")){ closeDetail(); return; }
+  if(e.target.id === "modal"){ closeDetail(); }
+});
+document.addEventListener("keydown", e=>{
+  if(e.key !== "Escape") return;
+  closeDetail();
+  if(W.on){ W.on = false; $("#wpanel").classList.remove("on"); wRenderPill(); }
+});
+
+function doSearch(v){
+  const val = (v !== undefined ? v : $("#q").value).trim();
+  if(v !== undefined) $("#q").value = v;
+  if(!val){ renderHot(); return; }
+  renderResults(search(val), val);
+  $("#results").scrollTop = 0;
+}
+$("#form").addEventListener("submit", e=>{ e.preventDefault(); doSearch(); });
+
+let t = null;
+$("#q").addEventListener("input", e=>{
+  clearTimeout(t);
+  t = setTimeout(()=>{
+    const v = e.target.value.trim();
+    if(!v){ renderHot(); return; }
+    if(v.length < 1) return;
+    renderResults(search(v), v);
+  }, 220);
+});
+
+/* ============================================================
+   实时天气 —— Open-Meteo（免密钥、支持跨域）
+   定位链：本地缓存 → 浏览器定位 → IP 定位 → 北京兜底
+   ============================================================ */
+const WMO = {
+  0:["晴","☀️"],1:["晴间多云","🌤️"],2:["多云","⛅"],3:["阴","☁️"],
+  45:["雾","🌫️"],48:["冻雾","🌫️"],
+  51:["小毛毛雨","🌦️"],53:["毛毛雨","🌦️"],55:["大毛毛雨","🌦️"],
+  56:["冻毛毛雨","🌧️"],57:["冻毛毛雨","🌧️"],
+  61:["小雨","🌦️"],63:["中雨","🌧️"],65:["大雨","🌧️"],
+  66:["冻雨","🌧️"],67:["冻雨","🌧️"],
+  71:["小雪","🌨️"],73:["中雪","🌨️"],75:["大雪","❄️"],77:["米雪","🌨️"],
+  80:["阵雨","🌦️"],81:["阵雨","🌧️"],82:["强阵雨","⛈️"],
+  85:["阵雪","🌨️"],86:["强阵雪","❄️"],
+  95:["雷阵雨","⛈️"],96:["雷暴伴冰雹","⛈️"],99:["强雷暴伴冰雹","⛈️"]
+};
+const WKEY = "meme2026.weather.city";
+const W = { city:"", lat:null, lon:null, data:null, on:false, src:"", busy:false, err:false };
+let wT = null;
+
+function wFetch(url, ms, init){
+  const ctl = new AbortController();
+  const timer = setTimeout(()=>ctl.abort(), ms || 9000);
+  return fetch(url, { ...(init || {}), signal: ctl.signal }).finally(()=>clearTimeout(timer));
+}
+const wMeta = c => WMO[c] || ["未知","🌡️"];
+function wIcon(c, isDay){
+  let ic = wMeta(c)[1];
+  if(isDay === false) ic = ic.replace("☀️","🌙").replace("🌤️","🌙⛅").replace("⛅","☁️");
+  return ic;
+}
+function wWeekday(iso){
+  const d = new Date(iso + "T00:00:00");
+  return "周" + "日一二三四五六"[d.getDay()];
+}
+
+function wRenderPill(){
+  const pill = $("#wpill");
+  pill.classList.toggle("busy", W.busy && !W.data);
+  pill.classList.toggle("err", W.err && !W.data);
+  pill.setAttribute("aria-expanded", W.on ? "true" : "false");
+  if(W.busy && !W.data){ $("#wpillIcon").textContent = "📍"; $("#wpillTemp").textContent = "--"; $("#wpillCity").textContent = "定位中"; return; }
+  if(W.err && !W.data){ $("#wpillIcon").textContent = "⚠️"; $("#wpillTemp").textContent = "--"; $("#wpillCity").textContent = "点此重试"; return; }
+  if(!W.data) return;
+  $("#wpillIcon").textContent = wIcon(W.data.code, W.data.isDay);
+  $("#wpillTemp").textContent = Math.round(W.data.temp) + "°";
+  $("#wpillCity").textContent = W.city || "当前位置";
+}
+
+function wRenderPanel(){
+  const box = $("#wpanel");
+  if(W.busy && !W.data){ box.innerHTML = `<div class="werr">正在获取实时天气…</div>`; return; }
+  if(W.err && !W.data){
+    box.innerHTML = `<div class="werr">天气加载失败，可能是网络无法访问天气服务。<br><u id="wretry">点此重试</u></div>`;
+    $("#wretry").onclick = e => { e.stopPropagation(); wInit(true); };
+    return;
+  }
+  if(!W.data) return;
+  const d = W.data, meta = wMeta(d.code);
+  box.innerHTML = `
+    <div class="wtop">
+      <div>
+        <div class="wname">${esc(W.city || "当前位置")}<span class="wbadge">实时</span></div>
+        <div class="wsub">${esc(d.time)} 更新 · ${esc(W.src)}</div>
+      </div>
+      <button class="wlocate" id="wlocate" type="button" title="重新定位">◎</button>
+    </div>
+    <div class="wmain">
+      <div class="we">${wIcon(d.code, d.isDay)}</div>
+      <div>
+        <div class="wbig">${Math.round(d.temp)}<em>°C</em></div>
+        <div class="wdesc">${meta[0]} · 体感 ${Math.round(d.feels)}°</div>
+      </div>
+    </div>
+    <div class="wgrid">
+      <div><b>湿度</b><span>${Math.round(d.hum)}%</span></div>
+      <div><b>风速</b><span>${d.wind} m/s</span></div>
+      <div><b>今日最高</b><span>${Math.round(d.max)}°</span></div>
+      <div><b>今日最低</b><span>${Math.round(d.min)}°</span></div>
+    </div>
+    <div class="wfc">${d.fc.map(r=>`<div class="wfcrow"><span>${r.label}</span><i>${r.ic}</i><span><b>${r.max}°</b> / ${r.min}°</span></div>`).join("")}</div>
+    <div class="wsearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="wq" placeholder="换个城市，如 上海 / Tokyo" autocomplete="off" />
+    </div>
+    <div class="wlist" id="wlist"></div>`;
+  $("#wlocate").onclick = e => { e.stopPropagation(); wInit(true); };
+  const wi = $("#wq");
+  wi.addEventListener("input", e => { clearTimeout(wT); const v = e.target.value; wT = setTimeout(()=>wSearch(v), 300); });
+  wi.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); clearTimeout(wT); wSearch(e.target.value); } });
+}
+
+async function wSearch(q){
+  const box = $("#wlist");
+  if(!q || !q.trim()){ box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="wlistempty">搜索中…</div>`;
+  try{
+    const r = await wFetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q.trim())}&count=6&language=zh&format=json`, 8000);
+    const j = await r.json();
+    if(!j.results || !j.results.length){ box.innerHTML = `<div class="wlistempty">没找到这个城市</div>`; return; }
+    box.innerHTML = j.results.map((c,i)=>
+      `<button class="witem" type="button" data-i="${i}">${esc(c.name)}<em>${esc([c.admin1, c.country].filter(Boolean).join(" · "))}</em></button>`
+    ).join("");
+    box.querySelectorAll(".witem").forEach(el => {
+      el.onclick = ev => {
+        ev.stopPropagation();
+        const c = j.results[+el.dataset.i];
+        box.innerHTML = "";
+        if($("#wq")) $("#wq").value = "";
+        wLoad(c.latitude, c.longitude, c.name, { manual:true });
+      };
+    });
+  }catch(e){
+    box.innerHTML = `<div class="wlistempty">搜索失败，请重试</div>`;
+  }
+}
+
+async function wLoad(lat, lon, city, opts){
+  opts = opts || {};
+  W.lat = lat; W.lon = lon;
+  if(city) W.city = city;
+  // 换了个地点就清掉旧读数，避免「新城市名 + 旧温度」错配；同一地点刷新则保留，不闪
+  const sameSpot = W.data && Math.abs(W.data.lat - lat) < 1e-6 && Math.abs(W.data.lon - lon) < 1e-6;
+  if(!sameSpot) W.data = null;
+  W.busy = true; W.err = false;
+  wRenderPill();
+  if(W.on) wRenderPanel();
+  try{
+    const url = "https://api.open-meteo.com/v1/forecast"
+      + `?latitude=${lat}&longitude=${lon}`
+      + "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m"
+      + "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4";
+    const r = await wFetch(url, 9000);
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    const cu = j.current, dl = j.daily;
+    W.data = {
+      lat, lon,
+      temp: cu.temperature_2m, feels: cu.apparent_temperature,
+      hum: cu.relative_humidity_2m, wind: cu.wind_speed_10m,
+      code: cu.weather_code, isDay: cu.is_day === 1,
+      time: String(cu.time || "").slice(11, 16),
+      max: dl.temperature_2m_max[0], min: dl.temperature_2m_min[0],
+      fc: dl.time.slice(1, 4).map((tt, i) => {
+        const k = i + 1;
+        return { label: wWeekday(tt), ic: wIcon(dl.weather_code[k], true),
+                 max: Math.round(dl.temperature_2m_max[k]), min: Math.round(dl.temperature_2m_min[k]) };
+      })
+    };
+    W.src = opts.manual ? "手动选择" : opts.cache ? "已保存位置" : (opts.ip ? "IP 定位" : "浏览器定位");
+    W.busy = false;
+    try{ localStorage.setItem(WKEY, JSON.stringify({ name: W.city, lat, lon })); }catch(e){}
+    wRenderPill();
+    if(W.on) wRenderPanel();
+  }catch(err){
+    W.busy = false;
+    // 已有内容（缓存或上一次结果）就保留，只标记刷新失败，避免整块消失
+    if(W.data) W.src = W.src.replace(/（刷新失败）$/, "") + "（刷新失败）";
+    else W.err = true;
+    wRenderPill();
+    if(W.on) wRenderPanel();
+  }
+}
+
+async function wCityName(lat, lon){
+  try{
+    const r = await wFetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`, 6000);
+    if(!r.ok) return "";
+    const j = await r.json();
+    return j.city || j.locality || j.principalSubdivision || "";
+  }catch(e){ return ""; }
+}
+
+async function wIpLocate(){
+  const srcs = ["https://ipwho.is/", "https://ipapi.co/json/"];
+  for(const u of srcs){
+    try{
+      const r = await wFetch(u, 4000);
+      if(!r.ok) continue;
+      const j = await r.json();
+      const lat = Number(j.latitude), lon = Number(j.longitude);
+      if(isFinite(lat) && isFinite(lon)) return { lat, lon, city: j.city || "" };
+    }catch(e){}
+  }
+  return null;
+}
+
+async function wInit(force){
+  W.busy = true; W.err = false;
+  wRenderPill();
+  if(W.on) wRenderPanel();
+
+  // 1) 缓存：先立刻出内容，避免每次打开都空等定位
+  let cached = null;
+  if(!force){
+    try{ cached = JSON.parse(localStorage.getItem(WKEY) || "null"); }catch(e){ cached = null; }
+    if(cached && isFinite(cached.lat) && isFinite(cached.lon)){
+      await wLoad(cached.lat, cached.lon, cached.name || "", { cache:true });
+    }
+  }
+
+  // 2) 浏览器定位：成功且位置与缓存明显不同（约 >5km）才覆盖
+  const geo = await new Promise(res => {
+    if(!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(
+      p => res({ lat: p.coords.latitude, lon: p.coords.longitude }),
+      () => res(null),
+      { timeout: 7000, maximumAge: 600000, enableHighAccuracy: false }
+    );
+  });
+  if(geo){
+    const moved = !W.data || Math.abs(geo.lat - W.lat) > 0.05 || Math.abs(geo.lon - W.lon) > 0.05;
+    if(moved){
+      const name = await wCityName(geo.lat, geo.lon);
+      return wLoad(geo.lat, geo.lon, name || "当前位置", {});
+    }
+    W.src = "浏览器定位";
+    wRenderPill();
+    if(W.on) wRenderPanel();
+    return;
+  }
+
+  // 3) 定位不可用：缓存够用就保持，否则走 IP，最后兜底北京
+  if(W.data) return;
+  const ip = await wIpLocate();
+  if(ip) return wLoad(ip.lat, ip.lon, ip.city || "当前位置", { ip:true });
+
+  return wLoad(39.9042, 116.4074, "北京", {});
+}
+
+$("#wpill").addEventListener("click", e => {
+  e.stopPropagation();
+  W.on = !W.on;
+  $("#wpanel").classList.toggle("on", W.on);
+  wRenderPill();
+  if(W.on){
+    if(!W.data && !W.busy) wInit(false);
+    if(W.data || W.busy || W.err) wRenderPanel();
+  }
+});
+document.addEventListener("click", e => {
+  if(W.on && !e.target.closest("#weatherBox")){
+    W.on = false;
+    $("#wpanel").classList.remove("on");
+    wRenderPill();
+  }
+});
+
+wInit(false);
+
+/* ============================================================
+   AI 生图 —— 走本机 server.mjs 代理
+   密钥只存在服务端 .env，前端拿不到；且 Replicate 不返回 CORS 头，
+   浏览器本来就无法直连，必须经这一层。
+   ============================================================ */
+const AI = { ready:false, reason:'', account:'', model:'', cache:{}, busy:false };
+
+const AI_HINT = {
+  file:    '静态打开时不可用。在项目目录执行 node server.mjs，然后访问 http://127.0.0.1:8788',
+  offline: '没检测到本地服务。执行 node server.mjs 后刷新本页',
+  notoken: '.env 里缺少 REPLICATE_API_TOKEN',
+  badtoken: 'token 无效或已失效，请换一个',
+  network: '本机服务连不上 Replicate，检查网络或代理'
+};
+function aiHint(){
+  if(AI.ready) return '按需调用 ' + AI.model + '，每张约 $0.003';
+  return AI_HINT[AI.reason] || AI_HINT[AI.reason?.startsWith('http') ? 'network' : 'offline'] || AI_HINT.offline;
+}
+/* 英文提示词 —— flux 这类模型对英文响应明显更好；
+   早先直接用中文长句会画出乱码文字。风格后缀统一视觉。 */
+const AI_STYLE = ", minimalist editorial illustration, dark charcoal background, "
+  + "neon purple and teal gradient accents, flat vector style, high contrast, "
+  + "clean composition, generous negative space, no text, no letters, no words, no watermark, no signature";
+
+function aiPromptFor(m){
+  return (m.art || m.t) + AI_STYLE;
+}
+
+async function aiProbe(){
+  if(location.protocol === 'file:'){ AI.ready = false; AI.reason = 'file'; return; }
+  try{
+    const r = await wFetch('/api/status', 6000);
+    const j = await r.json();
+    AI.ready = !!j.ai;
+    AI.reason = j.reason || '';
+    AI.account = j.account || '';
+    AI.model = j.model || '';
+  }catch(e){
+    AI.ready = false; AI.reason = 'offline';
+  }
+}
+
+function aiRenderSaved(idx){
+  const out = $("#aiOut"), hit = AI.cache[idx];
+  if(!out || !hit) return;
+  out.innerHTML = `<figure class="aifig">
+      <img src="${esc(hit.image)}" alt="AI 生成的插画" />
+      <figcaption><a href="${esc(hit.image)}" download>下载图片</a><span>${esc(hit.model || AI.model)}</span></figcaption>
+    </figure>`;
+}
+
+async function aiGenerate(idx){
+  const m = MEMES[idx];
+  const btn = $("#aiGo"), stat = $("#aiStat"), out = $("#aiOut");
+  if(!btn || AI.busy) return;
+  if(!AI.ready){ stat.textContent = aiHint(); return; }
+
+  const prompt = ($("#aiPrompt").value || '').trim();
+  if(!prompt){ stat.textContent = '先写点画面描述再生成'; return; }
+
+  AI.busy = true;
+  btn.disabled = true;
+  btn.textContent = '生成中…';
+  const t0 = Date.now();
+  stat.textContent = '已用 0s';
+  out.innerHTML = `<div class="aiskel"><span></span></div>`;
+  const tick = setInterval(()=>{ stat.textContent = '已用 ' + ((Date.now()-t0)/1000).toFixed(0) + 's'; }, 500);
+
+  try{
+    const r = await wFetch('/api/generate', 180000, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, aspect_ratio: '16:9' })
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    AI.cache[idx] = j;
+    stat.textContent = '完成 · ' + (j.ms/1000).toFixed(1) + 's · ' + (j.saved ? '已存到 generated/' : '远程链接');
+    aiRenderSaved(idx);
+  }catch(e){
+    const msg = String((e && e.message) || e);
+    stat.textContent = '生成失败';
+    out.innerHTML = `<div class="aierr">${esc(msg)}</div>`;
+  }finally{
+    clearInterval(tick);
+    AI.busy = false;
+    btn.disabled = false;
+    btn.textContent = '重新生成';
+  }
+}
+
+aiProbe().then(() => {
+  // 探测完成后，若弹窗正开着就顺手把状态刷成最新
+  if($("#modal").classList.contains("on") && $("#aiStat")) $("#aiStat").textContent = aiHint();
+});
+
+renderHot();
+</script>
+</body>
+</html>
